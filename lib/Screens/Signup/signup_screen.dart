@@ -4,7 +4,7 @@ import 'package:measuremate/responsive.dart';
 import '../../components/background.dart';
 import 'components/sign_up_top_image.dart';
 import 'components/signup_form.dart';
-import 'components/socal_sign_up.dart';
+// import 'components/socal_sign_up.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -54,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: defaultPadding / 2),
-                    const SocalSignUp(),
+                    // const SocalSignUp(),
                   ],
                 ),
               )
@@ -80,25 +80,41 @@ class MobileSignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const SignUpScreenTopImage(),
-        Row(
-          children: [
-            const Spacer(),
-            Expanded(
-              flex: 8,
-              child: SignUpForm(
-                usernameController: usernameController,
-                emailController: emailController,
-                passwordController: passwordController,
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(), // dismiss keyboard on tap outside
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            left: 20,
+            right: 20,
+            top: 20,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const SignUpScreenTopImage(),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Spacer(),
+                  Expanded(
+                    flex: 8,
+                    child: SignUpForm(
+                      usernameController: usernameController,
+                      emailController: emailController,
+                      passwordController: passwordController,
+                    ),
+                  ),
+                  const Spacer(),
+                ],
               ),
-            ),
-            const Spacer(),
-          ],
+              const SizedBox(height: 16),
+              // const SocalSignUp(),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

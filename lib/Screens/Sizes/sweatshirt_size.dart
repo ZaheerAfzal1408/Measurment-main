@@ -16,27 +16,57 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
   List<Map<String, dynamic>> sweatshirtSizes = [
     {
       'size': 'EXTRA SMALL',
-      'measurements': {'Chest': 86, 'Waist': 68, 'Length': 55}
+      'measurements': {
+        'Chest': 86,
+        'Sweatshirt Length': 64,
+        'Sleeve Length': 55,
+        'Shoulder Width': 38
+      }
     },
     {
       'size': 'SMALL',
-      'measurements': {'Chest': 92, 'Waist': 76, 'Length': 64}
+      'measurements': {
+        'Chest': 92,
+        'Sweatshirt Length': 66,
+        'Sleeve Length': 57,
+        'Shoulder Width': 40
+      }
     },
     {
       'size': 'MEDIUM',
-      'measurements': {'Chest': 100, 'Waist': 82, 'Length': 66}
+      'measurements': {
+        'Chest': 100,
+        'Sweatshirt Length': 68,
+        'Sleeve Length': 59,
+        'Shoulder Width': 42
+      }
     },
     {
       'size': 'LARGE',
-      'measurements': {'Chest': 108, 'Waist': 88, 'Length': 68}
+      'measurements': {
+        'Chest': 108,
+        'Sweatshirt Length': 70,
+        'Sleeve Length': 61,
+        'Shoulder Width': 44
+      }
     },
     {
       'size': 'EXTRA LARGE',
-      'measurements': {'Chest': 92, 'Waist': 76, 'Length': 64}
+      'measurements': {
+        'Chest': 116,
+        'Sweatshirt Length': 72,
+        'Sleeve Length': 63,
+        'Shoulder Width': 46
+      }
     },
     {
       'size': 'DOUBLE XL',
-      'measurements': {'Chest': 92, 'Waist': 76, 'Length': 64}
+      'measurements': {
+        'Chest': 124,
+        'Sweatshirt Length': 74,
+        'Sleeve Length': 65,
+        'Shoulder Width': 48
+      }
     },
   ];
 
@@ -132,7 +162,7 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
                         RegExp(r'^\d+(\.\d{0,2})?$')),
                   ],
                   decoration: InputDecoration(
-                    labelText: "$point (Ideal: ${measurements[point]} cm)",
+                    labelText: "$point : ",
                     hintText: "Enter $point in cm",
                   ),
                 ),

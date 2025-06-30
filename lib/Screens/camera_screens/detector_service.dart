@@ -188,9 +188,9 @@ class _DetectorServer {
             double length = (rect.height) * pixelToCmRatio;
 
             measurmenmts.add({
-              "Inseam": inseam,
+              "Waist": inseam,
               "Outseam": outseam,
-              "Total Length": length,
+              "Length": length,
             });
           }
         }

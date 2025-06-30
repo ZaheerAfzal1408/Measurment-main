@@ -87,28 +87,17 @@ class _SweatshirtMeasurementResultState
     // 100 - (difference / widget.actualSize * 100);
     //uncomment this
     User user = FirebaseAuth.instance.currentUser!;
-    final List<Map<String, dynamic>> measurements = [
-      {
-        "name": "Chest Width",
-        "measurementInches": 20.5,
-        "measurementCm": inchesToCm(20.5)
-      },
-      {
-        "name": "Body Length",
-        "measurementInches": 28.0,
-        "measurementCm": inchesToCm(28.0)
-      },
-      {
-        "name": "Sleeve Length",
-        "measurementInches": 25.0,
-        "measurementCm": inchesToCm(25.0)
-      },
-      {
-        "name": "Shoulder Width",
-        "measurementInches": 18.0,
-        "measurementCm": inchesToCm(18.0)
-      },
-    ];
+    //
+    final List<Map<String, dynamic>> measurements = widget.actualSize.entries.map((entry) {
+      final name = entry.key;
+      final value = entry.value ?? 0.0;
+      return {
+        'name': name,
+        'measurementInches': cmToInches(value),
+        'measurementCm': value,
+      };
+    }).toList();
+
 
     return SafeArea(
       child: Scaffold(
@@ -231,14 +220,6 @@ class _SweatshirtMeasurementResultState
                 Center(
                   child: Column(
                     children: [
-                      Text(
-                        "Accuracy: ${accuracy.toStringAsFixed(2)}%",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: kPrimaryColor,
-                        ),
-                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async {

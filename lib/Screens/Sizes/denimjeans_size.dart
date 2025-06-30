@@ -66,9 +66,9 @@ class DenimJeansSize extends StatelessWidget {
 
     final Map<String, double> measurements = {
       "waist": 30.0,
-      "frontRise": 25.0,
-      "hip": 40.0,
-      "thigh": 24.0,
+      "outseam": 25.0,
+      "length": 40.0,
+      // "thigh": 24.0,
     };
 
     showDialog(
@@ -89,7 +89,7 @@ class DenimJeansSize extends StatelessWidget {
                   style: TextStyle(fontFamily: 'CeraPro'),
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: "Waist (Ideal: ${measurements['waist']} cm)",
+                    labelText: "Waist ",
                     hintText: "Enter waist in cm",
                   ),
                 ),
@@ -102,7 +102,7 @@ class DenimJeansSize extends StatelessWidget {
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText:
-                        "Front Rise (Ideal: ${measurements['frontRise']} cm)",
+                        "outseam ",
                     hintText: "Enter front rise in cm",
                   ),
                 ),
@@ -114,23 +114,23 @@ class DenimJeansSize extends StatelessWidget {
                   controller: hipController,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: "Hip (Ideal: ${measurements['hip']} cm)",
-                    hintText: "Enter hip in cm",
+                    labelText: "length ",
+                    hintText: "Enter length in cm",
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: TextField(
-                  style: TextStyle(fontFamily: 'CeraPro'),
-                  controller: thighController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: "Thigh (Ideal: ${measurements['thigh']} cm)",
-                    hintText: "Enter thigh in cm",
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 16.0),
+              //   child: TextField(
+              //     style: TextStyle(fontFamily: 'CeraPro'),
+              //     controller: thighController,
+              //     keyboardType: TextInputType.numberWithOptions(decimal: true),
+              //     decoration: InputDecoration(
+              //       labelText: "Thigh (Ideal: ${measurements['thigh']} cm)",
+              //       hintText: "Enter thigh in cm",
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           actions: [
@@ -149,14 +149,15 @@ class DenimJeansSize extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     final waist = double.tryParse(waistController.text);
-                    final frontRise = double.tryParse(frontRiseController.text);
-                    final hip = double.tryParse(hipController.text);
-                    final thigh = double.tryParse(thighController.text);
+                    final outseam = double.tryParse(frontRiseController.text);
+                    final length = double.tryParse(hipController.text);
+                    // final thigh = double.tryParse(thighController.text);
 
                     if (waist != null &&
-                        frontRise != null &&
-                        hip != null &&
-                        thigh != null) {
+                        outseam != null &&
+                        length != null
+                        // thigh != null
+                    ) {
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -170,9 +171,9 @@ class DenimJeansSize extends StatelessWidget {
 
                       final measurements = {
                         "waist": waist,
-                        "frontRise": frontRise,
-                        "hip": hip,
-                        "thigh": thigh,
+                        "outseam": outseam,
+                        "length": length,
+                        // "thigh": thigh,
                       };
                       final cameras = await availableCameras();
                       Navigator.push(

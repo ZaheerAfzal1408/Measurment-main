@@ -10,6 +10,7 @@ import '../../constants.dart';
 
 class SweatshirtMeasurementResult extends StatefulWidget {
   final Map<String, double?> actualSize;
+  final Map<String, double?> selectedMeasurements;
   final String selectedSize;
   final String capturedImagePath;
 
@@ -18,6 +19,7 @@ class SweatshirtMeasurementResult extends StatefulWidget {
     required this.actualSize,
     required this.selectedSize,
     required this.capturedImagePath,
+    required this.selectedMeasurements
   });
 
   @override
@@ -88,15 +90,35 @@ class _SweatshirtMeasurementResultState
     //uncomment this
     User user = FirebaseAuth.instance.currentUser!;
     //
-    final List<Map<String, dynamic>> measurements = widget.actualSize.entries.map((entry) {
+    // final List<Map<String, dynamic>> measurements = widget.actualSize.entries.map((entry) {
+    //   final name = entry.key;
+    //   final value = entry.value ?? 0.0;
+    //   return {
+    //     'name': name,
+    //     'measurementInches': cmToInches(value),
+    //     'measurementCm': value,
+    //   };
+    // }).toList();
+    final List<Map<String, dynamic>> comparisonList = widget.actualSize.entries.map((entry) {
       final name = entry.key;
-      final value = entry.value ?? 0.0;
+      final measuredCm = entry.value ?? 0.0;
+      final selectedCm = widget.selectedMeasurements[name] ?? 0.0;
+
+      final diff = (measuredCm - selectedCm).abs();
+      final accuracy = selectedCm == 0 ? 0 : (100 - (diff / selectedCm) * 100).clamp(0, 100);
+
       return {
         'name': name,
-        'measurementInches': cmToInches(value),
-        'measurementCm': value,
+        'selectedCm': selectedCm,
+        'selectedInches': cmToInches(selectedCm),
+        'measuredCm': measuredCm,
+        'measuredInches': cmToInches(measuredCm),
+        'differenceCm': diff,
+        'differenceInches': cmToInches(diff),
+        'accuracy': accuracy,
       };
     }).toList();
+
 
 
     return SafeArea(
@@ -117,11 +139,18 @@ class _SweatshirtMeasurementResultState
                 Stack(
                   alignment: Alignment.center,
                   children: [
+                    // Image.file(
+                    //   File(widget.capturedImagePath),
+                    //   height: 300,
+                    //   fit: BoxFit.contain,
+                    // ),
                     Image.file(
                       File(widget.capturedImagePath),
+                      key: UniqueKey(),
                       height: 300,
                       fit: BoxFit.contain,
                     ),
+
                     Positioned(
                       bottom: 10,
                       child: Row(
@@ -154,6 +183,51 @@ class _SweatshirtMeasurementResultState
                   ],
                 ),
                 const SizedBox(height: 20),
+                // Card(
+                //   margin: const EdgeInsets.symmetric(vertical: 10.0),
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10.0),
+                //   ),
+                //   elevation: 2,
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(defaultPadding),
+                //     child: Column(
+                //       children: [
+                //         // Table Header
+                //          Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             const Text("Name",
+                //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                //             Text(
+                //               isInches ? "Inches" : "Centimeters",
+                //               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                //             ),
+                //           ],
+                //         ),
+                //
+                //         const Divider(),
+                //         ...measurements.map((entry) {
+                //           return Padding(
+                //             padding: const EdgeInsets.symmetric(vertical: 8.0),
+                //             child: Row(
+                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //               children: [
+                //                 Text(entry['name'], style: const TextStyle(fontSize: 16)),
+                //                 Text(
+                //                   isInches
+                //                       ? entry['measurementInches'].toStringAsFixed(2)
+                //                       : entry['measurementCm'].toStringAsFixed(2),
+                //                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                //                 ),
+                //               ],
+                //             ),
+                //           );
+                //         }).toList(),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 10.0),
                   shape: RoundedRectangleBorder(
@@ -163,59 +237,143 @@ class _SweatshirtMeasurementResultState
                   child: Padding(
                     padding: const EdgeInsets.all(defaultPadding),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Table Header
-                        const Row(
+                        const Text(
+                          "Sweatshirt Size Comparison",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     const Text("Measurement", style: TextStyle(fontWeight: FontWeight.bold)),
+                        //     Text("Selected (${isInches ? 'in' : 'cm'})",
+                        //         style: const TextStyle(fontWeight: FontWeight.bold)),
+                        //     Text("Measured (${isInches ? 'in' : 'cm'})",
+                        //         style: const TextStyle(fontWeight: FontWeight.bold)),
+                        //   ],
+                        // ),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Name",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("Inches",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("Centimeters",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                            Expanded(flex: 2, child: Text("Measurement", style: TextStyle(fontWeight: FontWeight.bold))),
+                            Expanded(flex: 1, child: Text("Selected (${isInches ? 'in' : 'cm'})", style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
+                            Expanded(flex: 1, child: Text("Measured (${isInches ? 'in' : 'cm'})", style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
+                            Expanded(flex: 1, child: Text("Difference", style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
                           ],
                         ),
                         const Divider(),
-                        ...measurements.map((entry) {
+                        // const Divider(),
+
+                        // Render rows
+                        // ...widget.selectedMeasurements.entries.map((entry) {
+                        //   final name = entry.key;
+                        //   final selectedValue = entry.value ?? 0.0;
+                        //   final measuredValue = widget.actualSize[name] ?? 0.0;
+                        //
+                        //   return Padding(
+                        //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //       children: [
+                        //         Expanded(
+                        //           flex: 2,
+                        //           child: Text(
+                        //             name,
+                        //             style: const TextStyle(fontSize: 16),
+                        //           ),
+                        //         ),
+                        //
+                        //         // Selected value
+                        //         Expanded(
+                        //           flex: 1,
+                        //           child: Text(
+                        //             isInches
+                        //                 ? cmToInches(selectedValue).toStringAsFixed(2)
+                        //                 : selectedValue.toStringAsFixed(2),
+                        //             style: const TextStyle(fontSize: 16),
+                        //             textAlign: TextAlign.center,
+                        //           ),
+                        //         ),
+                        //
+                        //         // Add space between selected and measured
+                        //         const SizedBox(width: 20),
+                        //
+                        //         // Measured value
+                        //         Expanded(
+                        //           flex: 1,
+                        //           child: Text(
+                        //             isInches
+                        //                 ? cmToInches(measuredValue).toStringAsFixed(2)
+                        //                 : measuredValue.toStringAsFixed(2),
+                        //             style: const TextStyle(fontSize: 16),
+                        //             textAlign: TextAlign.center,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   );
+                        // }).toList(),
+                        ...widget.selectedMeasurements.entries.map((entry) {
+                          final name = entry.key;
+                          final selectedValue = entry.value ?? 0.0;
+                          final measuredValue = widget.actualSize[name] ?? 0.0;
+                          final difference = (measuredValue - selectedValue).abs();
+
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(entry['name'],
-                                    style: const TextStyle(fontSize: 16)),
-                                Text(
-                                  isInches
-                                      ? entry['measurementInches']
-                                          .toStringAsFixed(2)
-                                      : entry['measurementCm']
-                                          .toStringAsFixed(2),
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    name,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                                 ),
-                                Text(
-                                  isInches
-                                      ? entry['measurementCm']
-                                          .toStringAsFixed(2)
-                                      : entry['measurementInches']
-                                          .toStringAsFixed(2),
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    isInches
+                                        ? cmToInches(selectedValue).toStringAsFixed(2)
+                                        : selectedValue.toStringAsFixed(2),
+                                    style: const TextStyle(fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    isInches
+                                      ? cmToInches(difference).toStringAsFixed(2)
+                                        : difference.toStringAsFixed(2),
+                                    style: const TextStyle(fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    isInches
+                          ? cmToInches(measuredValue).toStringAsFixed(2)
+                              : measuredValue.toStringAsFixed(2),
+                                    style: const TextStyle(fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ],
                             ),
                           );
                         }).toList(),
+
                       ],
                     ),
                   ),
                 ),
+
+
                 const SizedBox(height: 10),
                 Center(
                   child: Column(

@@ -4,19 +4,20 @@ import 'package:measuremate/Screens/results/sweatshirt_result.dart';
 
 class SweatshirtCameraScreen extends StatefulWidget {
   final List<CameraDescription> cameras;
-  final Map<String, double?> actualSize;
+  final Map<String, double?> selectedMeasurements;
   final String selectedSize;
 
   const SweatshirtCameraScreen({
     super.key,
     required this.cameras,
-    required this.actualSize,
+    required this.selectedMeasurements,
     required this.selectedSize,
   });
 
   @override
   _SweatshirtCameraScreenState createState() => _SweatshirtCameraScreenState();
 }
+
 
 class _SweatshirtCameraScreenState extends State<SweatshirtCameraScreen> {
   late CameraController _controller;
@@ -59,16 +60,28 @@ class _SweatshirtCameraScreenState extends State<SweatshirtCameraScreen> {
               await _initializeControllerFuture;
               final image = await _controller.takePicture();
               if (context.mounted) {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => SweatshirtMeasurementResult(
+                //       actualSize: widget.actualSize,
+                //       selectedSize: widget.selectedSize,
+                //       capturedImagePath: image.path,
+                //     ),
+                //   ),
+                // );
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SweatshirtMeasurementResult(
-                      actualSize: widget.actualSize,
-                      selectedSize: widget.selectedSize,
-                      capturedImagePath: image.path,
-                    ),
+                      builder: (context) => SweatshirtMeasurementResult(
+                        actualSize: widget.selectedMeasurements,
+                        selectedMeasurements: widget.selectedMeasurements,
+                        selectedSize: widget.selectedSize,
+                        capturedImagePath: image.path,
+                      ),
                   ),
                 );
+
               }
             } catch (e) {
               print(e);

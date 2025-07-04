@@ -175,7 +175,7 @@ class _SelectionPageState extends State<SelectionPage> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-              fontFamily: 'CeraPro',
+              // fontFamily: 'CeraPro',
             color: Colors.black,
             letterSpacing: 3.5
           ),
@@ -221,7 +221,9 @@ class _SelectionPageState extends State<SelectionPage> {
                   backgroundColor: Colors.white,
                   child: Text(
                     widget.userName.isNotEmpty ? widget.userName[0] : 'U',
-                    style: const TextStyle(fontSize: 40, color: kPrimaryColor, fontFamily: 'CeraPro'),
+                    style: const TextStyle(fontSize: 40, color: kPrimaryColor,
+                        // fontFamily: 'CeraPro'
+                    ),
                   ),
                 ),
               ),
@@ -230,7 +232,9 @@ class _SelectionPageState extends State<SelectionPage> {
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               title: const Text(
                 "Logout",
-                style: TextStyle(fontSize: 16, fontFamily: 'CeraPro'),
+                style: TextStyle(fontSize: 16,
+                    // fontFamily: 'CeraPro'
+                ),
               ),
               onTap: () {
                 logout(context);
@@ -328,7 +332,7 @@ class _SelectionPageState extends State<SelectionPage> {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'CeraPro',
+                    // fontFamily: 'CeraPro',
                     letterSpacing: 1.0,
                     color: Colors.black87,
                   ),

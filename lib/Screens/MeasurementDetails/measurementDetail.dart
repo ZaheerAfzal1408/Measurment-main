@@ -20,7 +20,10 @@ class MeasurementDetailScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(title, style: TextStyle(fontFamily: 'CeraPro', letterSpacing: 3.5),),
+          title: Text(title, style:
+          TextStyle(
+              // fontFamily: 'CeraPro',
+              letterSpacing: 3.5),),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

@@ -19,7 +19,7 @@ class DenimJeansSize extends StatelessWidget {
             "DENIM JEANS SIZE",
             style: TextStyle(
                 color: Colors.white,
-                fontFamily: 'CeraPro',
+                // fontFamily: 'CeraPro',
                 letterSpacing: 3.5,
                 fontWeight: FontWeight.bold),
           ),
@@ -76,63 +76,69 @@ class DenimJeansSize extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           title: Text(
-            "Enter measurements for size $selectedSize",
-            style: TextStyle(fontFamily: 'CeraPro'),
+            "Enter measurements \nfor size $selectedSize",
+            style: const TextStyle(fontSize: 20),
+            // style: TextStyle(fontFamily: 'CeraPro'),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: TextField(
-                  controller: waistController,
-                  style: TextStyle(fontFamily: 'CeraPro'),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: "Waist ",
-                    hintText: "Enter waist in cm",
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: TextField(
-                  style: TextStyle(fontFamily: 'CeraPro'),
-                  controller: frontRiseController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText:
-                        "outseam ",
-                    hintText: "Enter front rise in cm",
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: TextField(
-                  style: TextStyle(fontFamily: 'CeraPro'),
-                  controller: hipController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: "length ",
-                    hintText: "Enter length in cm",
-                  ),
-                ),
-              ),
-              // Padding(
-              //   padding: const EdgeInsets.only(bottom: 16.0),
-              //   child: TextField(
-              //     style: TextStyle(fontFamily: 'CeraPro'),
-              //     controller: thighController,
-              //     keyboardType: TextInputType.numberWithOptions(decimal: true),
-              //     decoration: InputDecoration(
-              //       labelText: "Thigh (Ideal: ${measurements['thigh']} cm)",
-              //       hintText: "Enter thigh in cm",
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
+          content: SingleChildScrollView(
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: TextField(
+                          controller: waistController,
+                          // style: TextStyle(fontFamily: 'CeraPro'),
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            labelText: "Waist ",
+                            hintText: "Enter waist in cm",
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: TextField(
+                          // style: TextStyle(fontFamily: 'CeraPro'),
+                          controller: frontRiseController,
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            labelText: "inseam ",
+                            hintText: "Enter front rise in cm",
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: TextField(
+                          // style: TextStyle(fontFamily: 'CeraPro'),
+                          controller: hipController,
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            labelText: "length ",
+                            hintText: "Enter length in cm",
+                          ),
+                        ),
+                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.only(bottom: 16.0),
+                      //   child: TextField(
+                      //     style: TextStyle(fontFamily: 'CeraPro'),
+                      //     controller: thighController,
+                      //     keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      //     decoration: InputDecoration(
+                      //       labelText: "Thigh (Ideal: ${measurements['thigh']} cm)",
+                      //       hintText: "Enter thigh in cm",
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ))),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -143,27 +149,27 @@ class DenimJeansSize extends StatelessWidget {
                   },
                   child: const Text(
                     "Cancel",
-                    style: TextStyle(fontFamily: 'CeraPro', fontSize: 18),
+                    style: TextStyle(
+                        // fontFamily: 'CeraPro',
+                        fontSize: 18),
                   ),
                 ),
                 TextButton(
                   onPressed: () async {
                     final waist = double.tryParse(waistController.text);
-                    final outseam = double.tryParse(frontRiseController.text);
+                    final inseam = double.tryParse(frontRiseController.text);
                     final length = double.tryParse(hipController.text);
                     // final thigh = double.tryParse(thighController.text);
 
-                    if (waist != null &&
-                        outseam != null &&
-                        length != null
+                    if (waist != null && inseam != null && length != null
                         // thigh != null
-                    ) {
+                        ) {
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
                             'Measurements confirmed!',
-                            style: TextStyle(fontFamily: 'CeraPro'),
+                            // style: TextStyle(fontFamily: 'CeraPro'),
                           ),
                           duration: Duration(seconds: 2),
                         ),
@@ -171,7 +177,7 @@ class DenimJeansSize extends StatelessWidget {
 
                       final measurements = {
                         "waist": waist,
-                        "outseam": outseam,
+                        "inseam": inseam,
                         "length": length,
                         // "thigh": thigh,
                       };
@@ -180,9 +186,10 @@ class DenimJeansSize extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CameraPage(
-                            type: 'jean',
+                            type: 'jeans',
                             actualSize: measurements,
                             selectedSize: selectedSize,
+                            selectedMeasurements: measurements,
                           ),
                         ),
                       );
@@ -191,7 +198,7 @@ class DenimJeansSize extends StatelessWidget {
                         const SnackBar(
                           content: Text(
                             'Please enter valid measurements!',
-                            style: TextStyle(fontFamily: 'CeraPro'),
+                            // style: TextStyle(fontFamily: 'CeraPro'),
                           ),
                         ),
                       );
@@ -208,7 +215,7 @@ class DenimJeansSize extends StatelessWidget {
                   ),
                   child: const Text(
                     "Confirm",
-                    style: TextStyle(fontFamily: 'CeraPro'),
+                    // style: TextStyle(fontFamily: 'CeraPro'),
                   ),
                 ),
               ],

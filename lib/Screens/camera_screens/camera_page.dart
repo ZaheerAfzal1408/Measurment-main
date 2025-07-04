@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,12 +12,15 @@ import 'detector_service.dart';
 class CameraPage extends StatefulWidget {
   const CameraPage(
       {super.key,
-      required this.type,
-      required this.actualSize,
-      required this.selectedSize});
+        required this.type,
+        required this.actualSize,
+        required this.selectedSize,
+        required this.selectedMeasurements,});
   final String type;
   final Map<String, double?> actualSize;
   final String selectedSize;
+  final Map<String, double> selectedMeasurements;
+
   @override
   State<CameraPage> createState() => _CameraPageState();
 }
@@ -28,8 +32,42 @@ class _CameraPageState extends State<CameraPage> {
   List<List<Map<String, double>>> _contours = [];
   List<Map<String, double>> _measurments = [];
   final ScreenshotController _screenshotController = ScreenshotController();
+  void _showInstructionDialog() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Instructions"),
+            content: const Text(
+              "Position garment 50–80 cm away on a flat surface with good lighting.\n\n"
+                  "Tap screen to focus if blurry.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Got it"),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
   String path = '';
-
+  // Future<String> saveImageToAppDirectory(XFile imageFile) async {
+  //   final appDir = await getApplicationDocumentsDirectory();
+  //   final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
+  //   final savedImage = await File(imageFile.path).copy('${appDir.path}/$fileName');
+  //   return savedImage.path;
+  // }
+  Future<String> saveWithNewName(String originalPath) async {
+    final directory = await getTemporaryDirectory();
+    final newFileName = 'captured_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final newPath = '${directory.path}/$newFileName';
+    final newFile = await File(originalPath).copy(newPath);
+    return newFile.path;
+  }
   _cameraStream() async {
     Detector.start().then((instance) {
       _detector = instance;
@@ -69,6 +107,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
+    _showInstructionDialog();
     _cameraStream();
     _getSavePath();
   }
@@ -88,63 +127,93 @@ class _CameraPageState extends State<CameraPage> {
         child: _controller == null
             ? Text("Loading")
             : Column(
-                children: [
-                  Expanded(
-                    child: Screenshot(
-                      controller: _screenshotController,
-                      child: Stack(
-                        children: [
-                          CameraPreview(_controller!),
-                          if (_controller != null &&
-                              _controller!.value.isInitialized)
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                return CustomPaint(
-                                  size: _controller!.value.previewSize!,
-                                  painter: ContourPainter(
-                                    _contours,
-                                    Size(
-                                        MediaQuery.of(context).size.width,
-                                        MediaQuery.of(context).size.width *
-                                            _controller!.value.aspectRatio),
-                                  ),
-                                );
-                              },
+          children: [
+            Expanded(
+              child: Screenshot(
+                controller: _screenshotController,
+                child: Stack(
+                  children: [
+                    CameraPreview(_controller!),
+                    if (_controller != null &&
+                        _controller!.value.isInitialized)
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return CustomPaint(
+                            size: _controller!.value.previewSize!,
+                            painter: ContourPainter(
+                              _contours,
+                              Size(
+                                  MediaQuery.of(context).size.width,
+                                  MediaQuery.of(context).size.width *
+                                      _controller!.value.aspectRatio),
                             ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
-                  ),
-                  _measurments.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(_measurments.first.toString()),
-                        )
-                      : const SizedBox(),
-                ],
+                  ],
+                ),
               ),
+            ),
+            _measurments.isNotEmpty
+                ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(_measurments.first.toString()),
+            )
+                : const SizedBox(),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          await Future.delayed(const Duration(milliseconds: 500));
+
           _screenshotController
               .captureAndSave(path, fileName: 'image.png')
               .then((savePath) {
             if (savePath != null && path.isNotEmpty) {
+              print("Captured Measurments: $_measurments");
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => widget.type == 'sweat'
                       ? SweatshirtMeasurementResult(
-                          actualSize: _measurments.first,
-                          selectedSize: widget.selectedSize,
-                          capturedImagePath: savePath,
-                        )
+                    actualSize: _measurments.first.map((k, v) => MapEntry(k, v)),
+                    selectedSize: widget.selectedSize,
+                    capturedImagePath: savePath,
+                    selectedMeasurements: widget.selectedMeasurements,
+                  )
                       : DenimJeanMeasurementResult(
-                          actualSizes: _measurments.first,
-                          selectedSize: widget.selectedSize,
-                          capturedImagePath: savePath,
-                        ),
+                    actualSizes: _measurments.first.map((k, v) => MapEntry(k, v)),
+                    // actualSizes: _measurments.isNotEmpty ? _measurments.first.map((k, v) => MapEntry(k, v)) : {},
+                    selectedSize: widget.selectedSize,
+                    capturedImagePath: savePath,
+                    selectedMeasurements: widget.selectedMeasurements,
+                  ),
                 ),
+                // MaterialPageRoute(
+                //   builder: (context) {
+                //     if (widget.type == 'sweat') {
+                //       return SweatshirtMeasurementResult(
+                //         actualSize: _measurments.first.map((k, v) => MapEntry(k, v)),
+                //         selectedSize: widget.selectedSize,
+                //         capturedImagePath: savePath,
+                //         selectedMeasurements: widget.selectedMeasurements,
+                //       );
+                //     } else if (widget.type == 'jeans') {
+                //       return DenimJeanMeasurementResult(
+                //         actualSizes: _measurments.first.map((k, v) => MapEntry(k, v)),
+                //         selectedSize: widget.selectedSize,
+                //         capturedImagePath: savePath,
+                //         selectedMeasurements: widget.selectedMeasurements,
+                //       );
+                //     } else {
+                //       return const Scaffold(
+                //         body: Center(child: Text("Invalid Type")),
+                //       );
+                //     }
+                //   },
+                // ),
+
               );
             }
           });

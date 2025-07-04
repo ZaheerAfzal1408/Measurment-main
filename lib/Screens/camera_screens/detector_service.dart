@@ -13,7 +13,7 @@ enum _Codes {
   busy,
   ready,
   detect,
-  result,
+  result, capture,
 }
 
 class _Command {
@@ -58,11 +58,11 @@ class Detector {
     }
   }
 
-  // void processStillImage(XFile capturedImage) {
-  //   if (_isReady) {
-  //     _sendPort.send(_Command(_Codes.capture, args: [capturedImage]));
-  //   }
-  // }
+  void processStillImage(XFile capturedImage) {
+    if (_isReady) {
+      _sendPort.send(_Command(_Codes.capture, args: [capturedImage]));
+    }
+  }
 
   void _handleCommand(_Command command) {
     switch (command.code) {
@@ -164,10 +164,10 @@ class _DetectorServer {
               cv.contourArea(contour) > 1000) {
             _contours.add(contour);
             double pixelToCmRatio = 0.1;
-            double chestWidth = (rect.width * pixelToCmRatio) * 0.5;
-            double sweatshirtLength = (rect.height * pixelToCmRatio) * 0.5;
-            double sleeveLength = (rect.height * 0.4) * pixelToCmRatio;
-            double shoulderWidth = (rect.width * 0.6) * pixelToCmRatio;
+            double chestWidth = (rect.width * pixelToCmRatio) * 0.9;
+            double sweatshirtLength = (rect.height * pixelToCmRatio) * 0.1;
+            double sleeveLength = (rect.height * 0.5) * pixelToCmRatio;
+            double shoulderWidth = (rect.width * 0.4) * pixelToCmRatio;
 
             measurmenmts.add({
               "Chest Width": chestWidth,
@@ -176,20 +176,20 @@ class _DetectorServer {
               "Shoulder Width": shoulderWidth,
             });
           }
-        } else {
-          if (aspectRatio > 1.0 &&
-              aspectRatio < 4.0 &&
-              cv.contourArea(contour) > 1000) {
+        } else if (type == 'jeans'){
+          if (aspectRatio > 0.4 &&
+              aspectRatio < 1.8 &&
+              cv.contourArea(contour) > 500) {
             _contours.add(contour);
 
             double pixelToCmRatio = 0.1;
-            double inseam = (rect.height * pixelToCmRatio) * 0.75;
-            double outseam = (rect.height * pixelToCmRatio) * 0.95;
-            double length = (rect.height) * pixelToCmRatio;
+            double waist = (rect.height * pixelToCmRatio - 23) * 0.75;
+            double inseam = (rect.height * pixelToCmRatio - 23) * 0.95;
+            double length = (rect.height) * pixelToCmRatio - 23.5;
 
             measurmenmts.add({
-              "Waist": inseam,
-              "Outseam": outseam,
+              "Waist": waist,
+              "Inseam": inseam,
               "Length": length,
             });
           }

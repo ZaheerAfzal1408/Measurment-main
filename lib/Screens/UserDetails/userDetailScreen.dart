@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:measuremate/Screens/MeasurementDetails/measurementDetail.dart';
 
@@ -23,7 +25,9 @@ class UserDetailScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('User Details', style: TextStyle(fontFamily: 'CeraPro', letterSpacing: 3.5, fontWeight: FontWeight.bold),),
+          title: const Text('User Details', style: TextStyle(
+              // fontFamily: 'CeraPro',
+              letterSpacing: 3.5, fontWeight: FontWeight.bold),),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -61,7 +65,7 @@ class UserDetailScreen extends StatelessWidget {
                             Text(
                               'Name: $userName',
                               style: const TextStyle(
-                                fontFamily: 'CeraPro',
+                                // fontFamily: 'CeraPro',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -69,7 +73,9 @@ class UserDetailScreen extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               'Email: $email',
-                              style: const TextStyle(fontSize: 16, fontFamily: 'CeraPro',),
+                              style: const TextStyle(fontSize: 16,
+                                // fontFamily: 'CeraPro',
+                              ),
                               overflow: TextOverflow.clip,
                               softWrap: true,
                             ),
@@ -142,10 +148,32 @@ String imageUrl = measurements[sizeKey]?['image']?.toString() ?? '';
             ),
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListTile(
+              // leading: ClipRRect(
+              //   borderRadius: BorderRadius.circular(8),
+              //   child: Image.network(
+              //     imageUrl,
+              //     fit: BoxFit.cover,
+              //     width: 50,
+              //     height: 50,
+              //     errorBuilder: (context, error, stackTrace) {
+              //       return const Icon(Icons.image_not_supported);
+              //     },
+              //   ),
+              // ),
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: imageUrl.startsWith('http')
+                    ? Image.network(
                   imageUrl,
+                  fit: BoxFit.cover,
+                  width: 50,
+                  height: 50,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.image_not_supported);
+                  },
+                )
+                    : Image.file(
+                  File(imageUrl),
                   fit: BoxFit.cover,
                   width: 50,
                   height: 50,
@@ -154,6 +182,7 @@ String imageUrl = measurements[sizeKey]?['image']?.toString() ?? '';
                   },
                 ),
               ),
+
               title: Text(sizeKey),
               subtitle: Text('Size: $size'),
             ),

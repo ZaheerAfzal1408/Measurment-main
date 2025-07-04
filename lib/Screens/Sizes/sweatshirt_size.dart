@@ -119,7 +119,7 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'CeraPro',
+                                      // fontFamily: 'CeraPro',
                                       color: Colors.black,
                                     ),
                                   ),
@@ -148,12 +148,16 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
       builder: (context) {
         return AlertDialog(
           title: Text("Enter Measurements for $size",
-              style: TextStyle(fontFamily: 'CeraPro')),
-          content: Column(
+              style: const TextStyle(fontSize: 20)),
+              // style: TextStyle(fontFamily: 'CeraPro')),
+            content: SingleChildScrollView(
+            child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,  // Optional: make it a bit narrower
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: measurements.keys.map((point) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.only(bottom: 12.0),
                 child: TextField(
                   controller: controllers[point],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -168,7 +172,7 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
                 ),
               );
             }).toList(),
-          ),
+          ))),
           actions: [
             TextButton(
               onPressed: () {
@@ -176,7 +180,9 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
               },
               child: const Text(
                 "Cancel",
-                style: TextStyle(fontFamily: 'CeraPro', fontSize: 18),
+                style: TextStyle(
+                    // fontFamily: 'CeraPro',
+                    fontSize: 18),
               ),
             ),
             TextButton(
@@ -192,7 +198,7 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
                     const SnackBar(
                         content: Text(
                       "Please enter valid measurements.",
-                      style: TextStyle(fontFamily: 'CeraPro'),
+                      // style: TextStyle(fontFamily: 'CeraPro'),
                     )),
                   );
                   return;
@@ -203,22 +209,52 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
                 double? chestMeasurement = actualSizes['Chest'];
 
                 if (chestMeasurement != null) {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => CameraPage(
+                  //       type: 'sweat',
+                  //       actualSize: actualSizes,
+                  //       selectedSize: size,
+                  //     ),
+                  //   ),
+                  // );
+                  Map<String, double> selectedMeasurements = {
+                    for (var entry in actualSizes.entries) entry.key: entry.value!
+                  };
+
+
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => CameraPage(
+                  //       type: 'sweat',
+                  //       actualSize: actualSizes,
+                  //       selectedSize: size,
+                  //       selectedMeasurements: actualSizes,
+                  //     ),
+                  //   ),
+                  // );
+                  final cameras = await availableCameras();
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => CameraPage(
                         type: 'sweat',
-                        actualSize: actualSizes,
+                        actualSize: selectedMeasurements,
                         selectedSize: size,
+                        selectedMeasurements: selectedMeasurements,
                       ),
                     ),
                   );
+
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text(
                       "Chest measurement is required.",
-                      style: TextStyle(fontFamily: 'CeraPro'),
+                      // style: TextStyle(fontFamily: 'CeraPro'),
                     )),
                   );
                 }
@@ -233,7 +269,7 @@ class _SweatshirtSizeState extends State<SweatshirtSize> {
               ),
               child: const Text(
                 "Confirm",
-                style: TextStyle(fontFamily: 'CeraPro'),
+                // style: TextStyle(fontFamily: 'CeraPro'),
               ),
             ),
           ],
